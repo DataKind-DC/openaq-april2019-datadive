@@ -3,13 +3,25 @@
 Steps taken from [Converting to Columnar Formats](https://docs.aws.amazon.com/athena/latest/ug/convert-to-columnar.html)
 
 1. Export user-specific variables
+
+**NOTE:** You can process the whole archive by exporting
+
+```bash
+export S3_INPUT=s3://openaq-fetches/realtime-gzipped
+```
+
+or process data for a single day:
+
+```bash
+export S3_INPUT=s3://openaq-fetches/realtime-gzipped/2019-04-26
+```
+
 ```bash
 export QUERY_FILE=s3://xxx/write-parquet-to-s3.q
 export REGION=us-east-1
 export KEYNAME=xxx
 export SUBNET=subnet-xxxxxxxx
 export LOG_URI=s3://xxx/emr_logs
-export S3_INPUT=s3://openaq-fetches/realtime-gzipped
 export S3_OUTPUT=s3://xxx/openaq_parquet
 ```
 
@@ -27,7 +39,7 @@ aws emr create-cluster \
   --service-role EMR_DefaultRole \
   --release-label emr-4.7.0 \
   --instance-type c4.4xlarge \
-  --instance-count 8 \
+  --instance-count 4 \
   --steps Type=HIVE,Name="Convert to Parquet",ActionOnFailure=TERMINATE_CLUSTER,Args=[-f,${QUERY_FILE},-hiveconf,INPUT=${S3_INPUT},-hiveconf,OUTPUT=${S3_OUTPUT},-hiveconf,REGION=${REGION}] \
   --region ${REGION} \
   --auto-terminate \
@@ -54,3 +66,4 @@ PARTITIONED BY (country string)
 STORED AS PARQUET
 LOCATION 's3://aimeeb-emr/openaq_parquet';
 ```
+

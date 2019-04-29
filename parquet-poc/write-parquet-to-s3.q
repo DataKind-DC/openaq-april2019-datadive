@@ -40,7 +40,7 @@ PARTITIONED BY (country string)
 STORED AS PARQUET
 LOCATION '${hiveconf:OUTPUT}';
 
-INSERT OVERWRITE TABLE openaq_parquet
+INSERT INTO TABLE openaq_parquet
 PARTITION (country)
 SELECT date,parameter,location,value,unit,city,attribution,averagingperiod,coordinates,sourcename,sourcetype,mobile,country
 FROM openaqrealtime_4parquet;
